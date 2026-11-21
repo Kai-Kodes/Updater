@@ -9,8 +9,9 @@ description = "Fast, modular, cross-platform CLI application & package manager f
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [
-    { name = "redsheronin" }
+    { name = "Kai-Kodes" }
 ]
+urls = { "Homepage" = "https://github.com/Kai-Kodes/Updater", "Repository" = "https://github.com/Kai-Kodes/Updater.git" }
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: POSIX :: Linux",

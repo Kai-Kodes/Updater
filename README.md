@@ -53,9 +53,19 @@ Fast, modular, cross-platform CLI application & package manager for **Linux**, *
 
 ## 🛠️ Installation
 
-### Linux & macOS
+### Standalone Python Tool (`uv` / `pipx`)
+You can install and run `updater` directly in an isolated environment without cloning:
 ```bash
-git clone https://github.com/redsheronin/updater.git ~/updater
+# Using uv (Recommended)
+uv tool install git+https://github.com/Kai-Kodes/Updater.git
+
+# Using pipx
+pipx install git+https://github.com/Kai-Kodes/Updater.git
+```
+
+### From Source (Linux & macOS)
+```bash
+git clone https://github.com/Kai-Kodes/Updater.git ~/updater
 cd ~/updater
 ./install.sh
 ```
@@ -66,7 +76,7 @@ alias ghup='updater'
 
 ### Windows (PowerShell)
 ```powershell
-git clone https://github.com/redsheronin/updater.git $HOME\updater
+git clone https://github.com/Kai-Kodes/Updater.git $HOME\updater
 cd $HOME\updater
 .\install.ps1
 ```

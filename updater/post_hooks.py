@@ -52,7 +52,7 @@ def run_post_update_hooks(updated_items: list[tuple[str, str, str]]):
     # 3. Zen Browser Bootstrap Hook (Preserves Vimium C & Auto Tab Discard)
     zen_bootstrap_dir = HOME / ".config" / "zen-bootstrap"
     zen_target_dirs = [
-        Path("/home/redsheronin/Downloads/zen.linux-x86_64/zen"),
+        HOME / "Downloads" / "zen.linux-x86_64" / "zen",
         HOME / ".local" / "share" / "zen"
     ]
     zen_updated = any("zen" in n for n in updated_names)
