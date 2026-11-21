@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "updater"
+version = "3.0.0"
+description = "Fast, modular, cross-platform CLI application & package manager for Linux, macOS, and Windows"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "redsheronin" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+]
+dependencies = []
+
+[project.scripts]
+updater = "updater.cli:main"
+ghup = "updater.cli:main"
