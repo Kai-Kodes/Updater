@@ -7,7 +7,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from typing import Any
-from updater.config import IS_LINUX
+from updater.config import IS_LINUX, IS_ARCH
 from updater.providers.base import BaseProvider
 from updater.providers.deb import KNOWN_DEB_PACKAGES
 from updater.ui import print_info, print_success, print_error
@@ -19,7 +19,7 @@ class AptProvider(BaseProvider):
 
     @classmethod
     def is_available(cls) -> bool:
-        return IS_LINUX and shutil.which("apt") is not None
+        return IS_LINUX and not IS_ARCH and shutil.which("apt") is not None
 
     def check_updates(self) -> list[dict[str, Any]]:
         updates = []

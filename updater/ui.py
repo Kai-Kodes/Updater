@@ -92,7 +92,7 @@ def run_fzf_interactive(items_tsv: Path, preview_cmd: str, prompt: str, marker: 
         "--with-nth=2..",
         "--delimiter=\t",
         f"--preview={preview_cmd}",
-        "--preview-window=right:52%:wrap:border-rounded,<105(down:55%:wrap:border-rounded)",
+        "--preview-window=right:55%:wrap:border-rounded",
         "--scroll-off=3",
         f"--header={header}",
         "--header-first",

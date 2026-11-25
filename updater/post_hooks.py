@@ -6,8 +6,8 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
-from updater.config import HOME, IS_LINUX
-from updater.ui import print_info, print_success, print_error
+from updater.config import HOME, IS_LINUX, IS_ARCH
+from updater.ui import print_info, print_success, print_error, print_warn
 
 def run_post_update_hooks(updated_items: list[tuple[str, str, str]]):
     """
@@ -28,10 +28,10 @@ def run_post_update_hooks(updated_items: list[tuple[str, str, str]]):
     print("    Executing Post-Update Service Hooks:")
     print("  " + "─" * 68)
 
-    # 1. Ollama Service Hook (Part 1 Bugfix 1)
+    # 1. Ollama Service Hook
     if "ollama" in updated_names:
         ollama_bin = HOME / ".local" / "bin" / "ollama"
-        if ollama_bin.is_file():
+        if not IS_ARCH and ollama_bin.is_file():
             print_info("Stopping ollama.service and syncing binary via 'install -m 755'...")
             # Stop service first to prevent 'Text file busy' error
             subprocess.run(["sudo", "systemctl", "stop", "ollama.service"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -42,12 +42,36 @@ def run_post_update_hooks(updated_items: list[tuple[str, str, str]]):
                 print_success("ollama binary installed to /usr/local/bin and ollama.service restarted")
             else:
                 print_error("Failed to install ollama binary to /usr/local/bin")
+        elif shutil.which("systemctl"):
+            is_active = subprocess.run(
+                ["systemctl", "is-active", "--quiet", "ollama.service"],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            ).returncode == 0
+            if is_active:
+                print_info("Restarting ollama.service...")
+                res = subprocess.run(["sudo", "systemctl", "restart", "ollama.service"])
+                if res.returncode == 0:
+                    print_success("ollama.service restarted")
+                else:
+                    print_error("Failed to restart ollama.service")
+            else:
+                print_info("ollama updated (ollama.service is inactive; skipping restart)")
 
     # 2. Sunshine Service Hook
-    if any("sunshine" in n for n in updated_names):
-        print_info("Restarting sunshine.service (user)...")
-        subprocess.run(["systemctl", "--user", "restart", "sunshine.service"])
-        print_success("sunshine.service restarted")
+    if any("sunshine" in n for n in updated_names) and shutil.which("systemctl"):
+        is_active = subprocess.run(
+            ["systemctl", "--user", "is-active", "--quiet", "sunshine.service"],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        ).returncode == 0
+        if is_active:
+            print_info("Restarting sunshine.service (user)...")
+            res = subprocess.run(["systemctl", "--user", "restart", "sunshine.service"])
+            if res.returncode == 0:
+                print_success("sunshine.service restarted")
+            else:
+                print_warn("Failed to restart sunshine.service")
+        else:
+            print_info("sunshine updated (sunshine.service is inactive; skipping restart)")
 
     # 3. Zen Browser Bootstrap Hook (Preserves Vimium C & Auto Tab Discard)
     zen_bootstrap_dir = HOME / ".config" / "zen-bootstrap"
@@ -55,8 +79,7 @@ def run_post_update_hooks(updated_items: list[tuple[str, str, str]]):
         HOME / "Downloads" / "zen.linux-x86_64" / "zen",
         HOME / ".local" / "share" / "zen"
     ]
-    zen_updated = any("zen" in n for n in updated_names)
-    if zen_updated or zen_bootstrap_dir.is_dir():
+    if zen_bootstrap_dir.is_dir():
         print_info("Applying Zen Browser bootstrap configs (Vimium C & Auto Tab Discard protection)...")
         for zdir in zen_target_dirs:
             if zdir.is_dir():

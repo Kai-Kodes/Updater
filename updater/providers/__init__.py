@@ -20,11 +20,13 @@ from updater.providers.standalone import StandaloneProvider
 if IS_LINUX:
     from updater.providers.apt import AptProvider
     from updater.providers.deb import DebProvider
+    from updater.providers.pacman import PacmanProvider
     from updater.providers.flatpak import FlatpakProvider
     from updater.providers.snap import SnapProvider
 else:
     AptProvider = None  # type: ignore
     DebProvider = None  # type: ignore
+    PacmanProvider = None  # type: ignore
     FlatpakProvider = None  # type: ignore
     SnapProvider = None  # type: ignore
 
@@ -62,6 +64,7 @@ def get_available_providers(git_repos: list[str] | None = None) -> list[BaseProv
         all_provider_classes.extend([
             AptProvider,  # type: ignore
             DebProvider,  # type: ignore
+            PacmanProvider,  # type: ignore
             FlatpakProvider,  # type: ignore
             SnapProvider,  # type: ignore
         ])

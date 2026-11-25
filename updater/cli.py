@@ -40,7 +40,7 @@ HELP_TEXT = f"""
 
   \033[1mSupported Providers:\033[0m
     • \033[35mAll Platforms:\033[0m   eget, git repos, vencord, npm, bun, cargo, pipx, uv, gh extensions, standalone apps
-    • \033[34mLinux:\033[0m           apt (dpkg rdepends), deb, flatpak, snap, systemd service & browser hooks
+    • \033[34mLinux:\033[0m           pacman/paru (CachyOS/Arch), apt (dpkg rdepends), deb, flatpak, snap, systemd service & browser hooks
     • \033[33mmacOS:\033[0m           Homebrew (formulae + casks), Mac App Store (mas)
     • \033[36mWindows:\033[0m         winget, scoop, chocolatey
 

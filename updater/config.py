@@ -16,6 +16,32 @@ IS_LINUX = PLATFORM_SYSTEM == "Linux"
 IS_MACOS = PLATFORM_SYSTEM == "Darwin"
 IS_WINDOWS = PLATFORM_SYSTEM == "Windows"
 
+def read_os_release() -> dict[str, str]:
+    """Parse /etc/os-release into a key-value dictionary on Linux."""
+    data: dict[str, str] = {}
+    if not IS_LINUX:
+        return data
+    for candidate in (Path("/etc/os-release"), Path("/usr/lib/os-release")):
+        if candidate.is_file():
+            try:
+                for line in candidate.read_text(encoding="utf-8", errors="ignore").splitlines():
+                    line = line.strip()
+                    if not line or line.startswith("#") or "=" not in line:
+                        continue
+                    key, val = line.split("=", 1)
+                    data[key.strip()] = val.strip().strip('"').strip("'")
+                break
+            except Exception:
+                pass
+    return data
+
+OS_RELEASE = read_os_release()
+DISTRO_ID = OS_RELEASE.get("ID", "").lower()
+DISTRO_ID_LIKE = OS_RELEASE.get("ID_LIKE", "").lower().split()
+IS_CACHYOS = IS_LINUX and DISTRO_ID == "cachyos"
+IS_ARCH = IS_LINUX and (DISTRO_ID in ("arch", "cachyos") or "arch" in DISTRO_ID_LIKE)
+IS_DEBIAN = IS_LINUX and (DISTRO_ID in ("debian", "ubuntu") or "debian" in DISTRO_ID_LIKE)
+
 # Standard Base Directories
 HOME = Path.home()
 
@@ -35,7 +61,24 @@ CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 # Eget & Downloads Paths
-EGET_CONFIG_PATH = HOME / ".eget.toml"
+def resolve_eget_config_path() -> Path:
+    """Resolve the eget manifest path, preferring Arch/CachyOS-specific manifests when present."""
+    env_cfg = os.environ.get("EGET_CONFIG")
+    if env_cfg:
+        p = Path(os.path.expanduser(env_cfg))
+        if p.is_file():
+            return p
+    if IS_ARCH:
+        for candidate in (
+            HOME / ".eget.cachyos.toml",
+            HOME / ".eget.arch.toml",
+            CONFIG_DIR / "eget.toml",
+        ):
+            if candidate.is_file():
+                return candidate
+    return HOME / ".eget.toml"
+
+EGET_CONFIG_PATH = resolve_eget_config_path()
 DEB_DIR = HOME / "Downloads" / "gh-debs"
 
 # Vencord / Vesktop Candidates

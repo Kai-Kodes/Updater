@@ -10,7 +10,7 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 from updater.config import (
-    HOME, EGET_CONFIG_PATH, DEB_DIR, TOKEN, IS_LINUX,
+    HOME, EGET_CONFIG_PATH, DEB_DIR, TOKEN, IS_LINUX, IS_ARCH,
     normalize_compare_tag
 )
 from updater.providers.base import BaseProvider
@@ -94,7 +94,7 @@ class DebProvider(BaseProvider):
 
     @classmethod
     def is_available(cls) -> bool:
-        return IS_LINUX and shutil.which("dpkg") is not None and EGET_CONFIG_PATH.is_file()
+        return IS_LINUX and not IS_ARCH and shutil.which("dpkg") is not None and EGET_CONFIG_PATH.is_file()
 
     def check_updates(self) -> list[dict[str, Any]]:
         if not EGET_CONFIG_PATH.is_file():

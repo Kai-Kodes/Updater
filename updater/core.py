@@ -50,16 +50,11 @@ def scan_updates(workdir: Path, git_repos: list[str] | None = None) -> list[dict
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(all_updates, f, indent=2)
 
-    # Adaptive column sizing for list view
+    # Adaptive column sizing for side-by-side left pane (~45% width)
     term_cols = shutil.get_terminal_size((120, 30)).columns
-    if term_cols < 105:
-        avail_left = max(60, term_cols - 8)
-        max_name_len = max((len(u["name"]) for u in all_updates), default=20)
-        name_col_width = max(16, min(24, max_name_len))
-    else:
-        avail_left = max(38, int(term_cols * 0.46) - 4)
-        target_name_width = avail_left - 10 - 5 - 22
-        name_col_width = max(14, min(target_name_width, 24))
+    avail_left = max(34, int(term_cols * 0.45) - 4)
+    target_name_width = avail_left - 10 - 5 - 22
+    name_col_width = max(14, min(target_name_width, 24))
 
     # Write items.tsv and preview markdown files
     items_tsv = workdir / "items.tsv"
@@ -198,15 +193,11 @@ def scan_uninstall(workdir: Path, git_repos: list[str] | None = None) -> list[di
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(all_items, f, indent=2)
 
-    # Responsive column alignment
+    # Responsive column alignment for side-by-side left pane (~45% width)
     term_cols = shutil.get_terminal_size((120, 30)).columns
-    if term_cols < 105:
-        name_col_width = 24
-        ver_col_width = 18
-    else:
-        avail_left = max(42, int(term_cols * 0.46) - 4)
-        name_col_width = max(14, min(22, avail_left - 10 - 12 - 12))
-        ver_col_width = max(10, min(16, avail_left - 10 - name_col_width - 12))
+    avail_left = max(38, int(term_cols * 0.45) - 4)
+    name_col_width = max(14, min(22, avail_left - 10 - 12 - 12))
+    ver_col_width = max(10, min(16, avail_left - 10 - name_col_width - 12))
 
     items_tsv = workdir / "items_uninstall.tsv"
     with open(items_tsv, "w", encoding="utf-8") as f_tsv:
@@ -243,7 +234,7 @@ def scan_uninstall(workdir: Path, git_repos: list[str] | None = None) -> list[di
                 pf.write("\n\n---\n\n")
                 pf.write(f"### {ICON_DEP} Dependency Analysis\n\n")
 
-                if item["source"] in ("apt", "deb"):
+                if item["source"] in ("apt", "deb", "pacman"):
                     deps = item.get("depends", [])
                     if deps:
                         sample_deps = deps[:10]

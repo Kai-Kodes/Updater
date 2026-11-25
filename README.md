@@ -20,8 +20,9 @@ Fast, modular, cross-platform CLI application & package manager for **Linux**, *
 | **`[uv]`** | All | `uv tool list` queried via PyPI API | `uv tool upgrade <pkg>` |  Yes (`uv tool uninstall`) |
 | **`[gh-ext]`** | All | `gh extension list` queried via GitHub Releases API | `gh extension upgrade <ext>` |  Yes (`gh extension remove`) |
 | **`[standalone]`** | All | Discovers untracked apps in `~/.local/opt`, `~/.local/share`, `/opt` | Manual/Upstream |  Yes (Interactive purge with size calculation) |
-| **`[apt]`** | Linux | `/var/lib/dpkg/status` reverse-dependency parser & `apt list --upgradable` | `sudo apt-get install --only-upgrade` |  Yes (`sudo apt-get purge`) with reverse dependency safety warning |
-| **`[deb]`** | Linux | Staged GitHub `.deb` packages in `~/Downloads/gh-debs` | `sudo dpkg -i <deb>` / `apt-get install` |  Yes (`sudo apt-get purge`) |
+| **`[pacman]`** | Linux (CachyOS / Arch) | `/etc/os-release` (`ID=cachyos` / `ID_LIKE=arch`), `checkupdates` / `pacman -Qu`, `paru -Qua`, & unowned `/opt/resolve` AUR RPC | `paru -Syu` (fallback `sudo pacman -Syu`) + `flatpak update -y` |  Yes (`sudo pacman -Rns`) with `Required By` dependency safety check |
+| **`[apt]`** | Linux (Debian / Ubuntu) | `/var/lib/dpkg/status` reverse-dependency parser & `apt list --upgradable` | `sudo apt-get install --only-upgrade` |  Yes (`sudo apt-get purge`) with reverse dependency safety warning |
+| **`[deb]`** | Linux (Debian / Ubuntu) | Staged GitHub `.deb` packages in `~/Downloads/gh-debs` | `sudo dpkg -i <deb>` / `apt-get install` |  Yes (`sudo apt-get purge`) |
 | **`[flatpak]`** | Linux | `flatpak remote-ls --updates` | `flatpak update -y <app>` |  Yes (`flatpak uninstall -y`) |
 | **`[snap]`** | Linux | `snap refresh --list` | `sudo snap refresh <app>` |  Yes (`sudo snap remove`) |
 | **`[brew]`** | macOS | `brew outdated --json=v2` (Formulae + Casks) | `brew upgrade <formula/cask>` |  Yes (`brew uninstall`) |
